@@ -1,3 +1,42 @@
+rconsoleclear()
+rconsolename("$ samuu#7670 script")
+rconsolewarn("Ola "..game.Players.LocalPlayer.DisplayName..'!')
+wait(0.5)
+rconsolewarn("Bem vindo ao meu script de SPTS!")
+wait(1)
+rconsolewarn("Antes do script comecar, irei injetar alguns scripts antes...")
+wait(1)
+rconsoleprint("\n\nAnti afk...\n")
+
+local sucess = pcall(function()
+    game.Players.LocalPlayer.Idled:Connect(function()
+    local VirtualUser = game:GetService("VirtualUser")
+    VirtualUser:CaptureController()
+    VirtualUser:ClickButton2(Vector2.new())
+    end)
+end)
+if sucess then
+    rconsoleprint("@@LIGHT_GREEN@@")
+    rconsoleprint("Sucesso ao injetar Anti afk script...\n")
+else
+    rconsoleprint("Erro ao injetar Anti afk script...\n")    
+end
+wait(0.1)
+
+local scripts = {"Bugs do personagem", "Anti afk 2.0", "Webhook service", "Websocket", "Metatables", "Remote Events Changed"}
+for i,v in pairs(scripts) do
+    rconsoleprint(string.format("\n\n%s...\n", v))
+    task.wait(math.random())
+    rconsoleprint("Sucesso ao injetar "..v..'...\n')
+end
+rconsolewarn("Por enqunato so temos esses scripts.")
+wait(0.2)
+rconsolewarn("Iniciando script...")
+
+delay(3, function()
+    rconsoleclear()
+end)
+
 loadstring(game:HttpGet("https://raw.githubusercontent.com/webhooking2022/functions-library/main/.functions"))()
 repeat wait() until functions
 local OLDUI = game.CoreGui:FindFirstChild("Ui library")
