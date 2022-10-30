@@ -1,5 +1,3 @@
-
-
 loadstring(game:HttpGet("https://raw.githubusercontent.com/webhooking2022/functions-library/main/.functions"))()
 repeat wait() until functions
 local OLDUI = game.CoreGui:FindFirstChild("Ui library")
@@ -296,6 +294,9 @@ end)
 local farms = menu:CreateTab("Farms")
 
 local teleports = menu:CreateTab("Teleports")
+
+
+
 
 local aimbot = menu:CreateTab("Target")
 
@@ -1207,7 +1208,7 @@ end)
 esp:CreateToggle("Enabled", function(bool)
     VisibleEsp = bool
 end)
-
+getgenv().espmax = false
 esp:CreateToggle("Esp max 150", function(bool)
     getgenv().espmax = bool
 end)
@@ -1336,4 +1337,86 @@ end)
 
 reputation:CreateToggle("No reputation good?", function(bool)
     whatisfarm = bool
+end)
+
+local webhook = menu:CreateTab("Web hook")
+
+local input_webhook = ''
+local input_first = false
+local input_body = false
+local input_psychic = false
+local input_delay = 1
+webhook:CreateTextBox("Webhook", function(text)
+    input_webhook = text 
+end)
+
+webhook:CreateTextBox("Delay web hook", function(text)
+    input_delay = tonumber(text) 
+end)
+
+
+
+webhook:CreateToggle("Fist Stats", function(bool)
+    input_first = bool
+end)
+
+webhook:CreateToggle("Body Stats", function(bool)
+    input_body = bool
+end)
+
+webhook:CreateToggle("Psychic Stats", function(bool)
+    input_psychic = bool
+end)
+
+
+
+webhook:CreateToggle("Start send webhooks", function(bool)
+    webhook_spam = bool
+
+    spawn(function()
+        while webhook_spam do
+            local tab = {
+                embeds = {
+                    {
+                        title = "🎃 SPTS Stats Made by $ samuu#7670";
+                        description = "**Your stats above:**";
+                        color = tonumber(0x00ff00);
+
+                        fields = {
+                            
+                        }
+
+                    }
+                }
+            }
+
+            local actives = {Psy = input_psychic, Body = input_body, First = input_first}
+
+            for i,v in pairs(actives) do
+                if v then
+                    local name 
+
+                    if i == "First" then
+                        name = game:GetService("Players").LocalPlayer.PlayerGui.ScreenGui.MenuFrame.InfoFrame.FSTxt.Text 
+                    end
+                    if i == "Body" then
+                        name = game:GetService("Players").LocalPlayer.PlayerGui.ScreenGui.MenuFrame.InfoFrame.BTTxt.Text
+                    end
+                    if i == "Psy" then
+                        name = game:GetService("Players").LocalPlayer.PlayerGui.ScreenGui.MenuFrame.InfoFrame.PPTxt.Text
+                    end
+
+                    name = string.format("%s%s%s", "*", name, "*")
+                    
+                    tab.embeds[1].fields[#tab.embeds[1].fields + 1] = {
+                        name = i,
+                        value = name,
+                    }
+                end
+            end
+
+            functions.sendWebHook(tab,input_webhook)
+            wait(input_delay)
+        end
+    end)
 end)
