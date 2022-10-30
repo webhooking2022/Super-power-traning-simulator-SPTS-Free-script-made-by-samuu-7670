@@ -360,7 +360,7 @@ function getHumanoid(plr)
     if sucess then return Humanoid end
 end
 
-function Translate(num)
+Translate = function(num)
     local final
     
     if num >= 0 and num < 1000 then
@@ -391,12 +391,15 @@ function Translate(num)
         final = string.sub(num, 1,3) .. '.' .. string.sub(num, 4,5) .. "B"
     end
     if num >= 100000000000 and num < 1000000000000 then
-        final = string.sub(num, 1,1) .. '.' .. string.sub(num, 2,3) .. "T"
+        final = string.sub(num, 1,4) .. '.' .. string.sub(num, 5,6) .. "B"
     end
     if num >= 1000000000000 and num < 10000000000000 then
-        final = string.sub(num, 1,2) .. '.' .. string.sub(num, 3,4) .. "T"
+        final = string.sub(num, 1,1) .. '.' .. string.sub(num, 2,3) .. "T"
     end
     if num >= 10000000000000 and num < 100000000000000 then
+        final = string.sub(num, 1,2) .. '.' .. string.sub(num, 3,4) .. "T"
+    end
+    if num >= 10000000000000 and num < 1000000000000000 then
         final = string.sub(num, 1,3) .. '.' .. string.sub(num, 4,5) .. "T"
     end
     if num >= 100000000000000 and num < 1000000000000000 then
@@ -1466,4 +1469,113 @@ webhook:CreateToggle("Start send webhooks", function(bool)
             wait(input_delay)
         end
     end)
+end)
+
+local FE = menu:CreateTab("FE")
+
+FE:CreateToggle("Invisible", function(bool)
+    if bool then
+        oldpos = functions.getRoot().CFrame
+        functions.getRoot().CFrame = CFrame.new(-4160, 241, -3508)
+        wait(0.3)
+        functions.getCharacter().LowerTorso:Destroy()
+        wait(0.3)
+        functions.getRoot().CFrame = oldpos 
+    else
+        Refresh()
+    end
+end)
+
+local Others = menu:CreateTab("Others")
+
+
+Others:CreateButton("Show fps", function()
+    local Menu = Instance.new("ScreenGui", game.CoreGui)
+    Menu.Name = "FPS"
+
+    local TextLabel = Instance.new("TextLabel", Menu)
+    TextLabel.BackgroundTransparency = 1
+
+    TextLabel.TextColor3 = Color3.fromRGB(255,255,255)
+    TextLabel.Text = "FPS: 0"
+
+    TextLabel.Size = UDim2.new(0, 70, 0, 50)
+
+    TextLabel.AnchorPoint = Vector2.new(1, 0)
+
+    TextLabel.Position = UDim2.new(1,0,0,0)
+
+    TextLabel.TextScaled = true
+
+
+    local FPS = 0
+
+
+    game:GetService("RunService").Stepped:Connect(function()
+
+    FPS+=1
+
+    end)
+
+
+    spawn(function()
+
+    while wait(1) do
+
+    TextLabel.Text = "FPS: "..FPS
+
+    FPS = 0 
+
+    end
+
+    end)
+end)
+
+Others:CreateButton("Rejoin Server", function()
+    game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId, game.Players.LocalPlayer)
+end)
+
+Others:CreateButton("FPS boost", function()
+    local Terrain = workspace:FindFirstChildOfClass('Terrain')
+    local Lighting = game.Lighting
+    local RunService = game:GetService("RunService")
+	Terrain.WaterWaveSize = 0
+	Terrain.WaterWaveSpeed = 0
+	Terrain.WaterReflectance = 0
+	Terrain.WaterTransparency = 0
+	Lighting.GlobalShadows = false
+	Lighting.FogEnd = 9e9
+	settings().Rendering.QualityLevel = 1
+	for i,v in pairs(game:GetDescendants()) do
+		if v:IsA("Part") or v:IsA("UnionOperation") or v:IsA("MeshPart") or v:IsA("CornerWedgePart") or v:IsA("TrussPart") then
+			v.Material = "Plastic"
+			v.Reflectance = 0
+		elseif v:IsA("Decal") then
+			v.Transparency = 1
+		elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
+			v.Lifetime = NumberRange.new(0)
+		elseif v:IsA("Explosion") then
+			v.BlastPressure = 1
+			v.BlastRadius = 1
+		end
+	end
+	for i,v in pairs(Lighting:GetDescendants()) do
+		if v:IsA("BlurEffect") or v:IsA("SunRaysEffect") or v:IsA("ColorCorrectionEffect") or v:IsA("BloomEffect") or v:IsA("DepthOfFieldEffect") then
+			v.Enabled = false
+		end
+	end
+	workspace.DescendantAdded:Connect(function(child)
+		coroutine.wrap(function()
+			if child:IsA('ForceField') then
+				RunService.Heartbeat:Wait()
+				child:Destroy()
+			elseif child:IsA('Sparkles') then
+				RunService.Heartbeat:Wait()
+				child:Destroy()
+			elseif child:IsA('Smoke') or child:IsA('Fire') then
+				RunService.Heartbeat:Wait()
+				child:Destroy()
+			end
+		end)()
+	end)
 end)
