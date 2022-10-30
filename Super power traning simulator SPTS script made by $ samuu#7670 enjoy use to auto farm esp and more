@@ -1502,6 +1502,25 @@ FE:CreateToggle("Invisible", function(bool)
     end
 end)
 
+FE:CreateButton("Split body (Deixar o torso)", function()
+    local plrchr = game:GetService('Players').LocalPlayer.Character;
+    plrchr.UpperTorso.Waist:Remove()
+
+end)
+
+FE:CreateButton("Split body (Sumir com o torso", function()
+    local plrchr = game:GetService('Players').LocalPlayer.Character;
+
+    oldpos = plrchr.HumanoidRootPart.CFrame
+    plrchr.HumanoidRootPart.CFrame = CFrame.new(0, 999, 0)
+    wait(0.5)
+    plrchr.UpperTorso.Waist:Destroy()
+    wait(0.3)
+    plrchr.HumanoidRootPart.CFrame = oldpos
+end)
+
+
+
 local Others = menu:CreateTab("Others")
 
 
@@ -1596,68 +1615,3 @@ Others:CreateButton("FPS boost", function()
 	end)
 end)
 
-local admins = {2482858167}
-function falar(msg)
-    local x = require(game.Players.LocalPlayer.PlayerScripts.ChatScript.ChatMain)
-    x.MessagePosted:fire(msg)
-end
-function ismyname(text)
-    if text == game.Players.LocalPlayer.Name or text == "." then return true else return false end
-end
-function NewAdmin(plr, isme)
-    if isme then
-        prefix = "!"
-        nome = "."
-        local tab = menu:CreateTab("Admins tab")
-        tab:CreateTextBox("Target", function(text)
-            local sucess = pcall(function()
-                nome = functions.FindPlayer(text).Name 
-            
-            end)
-
-            if not sucess then nome = "." end
-        end)
-    
-        tab:CreateButton("Bring player", function()
-            falar(prefix .. "bring "..nome)
-        end)
-        tab:CreateButton("Kill player", function()
-            falar(prefix .. "kill "..nome)
-        end)
-    end
-    
-
-    plr.Chatted:Connect(function(msg)
-        msg = msg .. ' '
-
-        msg = msg:split(" ")
-
-        local args = msg 
-
-        
-
-        if args[1] == prefix .. "bring" and ismyname(args[2]) then
-            functions.getRoot().CFrame = functions.getRoot(plr).CFrame
-        end
-        if args[1] == prefix .. "kill" and ismyname(args[2]) then
-            functions.getHumanoid().Health = 0
-        end
-        
-    end)
-
-end
-
-for i,v in pairs(game.Players:GetChildren()) do
-    if v then
-        if table.find(admins, v.UserId) then
-            NewAdmin(v, (v == game.Players.LocalPlayer))
-        end
-    end
-end
-game.Players.PlayerAdded:Connect(function(v)
-    if v then
-        if table.find(admins, v.UserId) then
-            NewAdmin(v, (v == game.Players.LocalPlayer))
-        end
-    end
-end)
