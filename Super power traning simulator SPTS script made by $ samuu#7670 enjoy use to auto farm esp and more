@@ -27,12 +27,11 @@ local key = rconsoleinput()
 
 if key == "Free menu" then
     prt("SUCESS", "Ok!, Aguarde pois iremos injetar alguns scripts.", "@@LIGHT_GREEN@@")
-    wait(1)
     prt("Anti afk", "Sucesso", "@@LIGHT_GREEN@@")
     game.Players.LocalPlayer.Idled:Connect(function()
-    local VirtualUser = game:GetService("VirtualUser")
-    VirtualUser:CaptureController()
-    VirtualUser:ClickButton2(Vector2.new())
+        local VirtualUser = game:GetService("VirtualUser")
+        VirtualUser:CaptureController()
+        VirtualUser:ClickButton2(Vector2.new())
     end)
     Continue = true
 else
@@ -43,13 +42,35 @@ end
 if Continue == true then else return end 
 loadstring(game:HttpGet("https://raw.githubusercontent.com/webhooking2022/functions-library/main/.functions"))()
 repeat wait() until functions
-local OLDUI = game.CoreGui:FindFirstChild("Ui library")
 
-if OLDUI then
-	OLDUI:Destroy()
-end
 
 local library = {}
+
+local queueteleport = (syn and syn.queue_on_teleport) or queue_on_teleport or (fluxus and fluxus.queue_on_teleport)
+
+game.Players.LocalPlayer.OnTeleport:Connect(function(State)
+    if State == Enum.TeleportState.Started then
+        if queueteleport then
+            queueteleport([[
+            hookfunction(rconsoleinput, function()
+                return "Free menu"
+            end)
+            ]])
+            queueteleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/webhooking2022/Super-power-traning-simulator-SPTS-Free-script-made-by-samuu-7670/main/Super%20power%20traning%20simulator%20SPTS%20script%20made%20by%20%24%20samuu%237670%20enjoy%20use%20to%20auto%20farm%20esp%20and%20more'))()")
+        end
+    end
+end)
+
+getgenv().toggles = {}
+local buttons = {}
+
+function fire_toggle(togglename, spec)
+    for i,v in pairs(toggles) do
+        if string.find(v[1]:lower(), togglename) then
+            v[2]()
+        end
+    end
+end
 
 function library:CreateWindow(text)
 	local ScreenGui = Instance.new("ScreenGui")
@@ -444,9 +465,8 @@ function library:CreateWindow(text)
             TextButton.TextColor3 = Color3.fromRGB(255, 255, 255)
             TextButton.TextSize = 14.000
             TextButton.TextXAlignment = Enum.TextXAlignment.Left
-            TextButton.MouseButton1Click:Connect(function()
-
-                toggled = not toggled
+            local function fire(spect)
+                toggled = spect or not toggled
                 
                 if toggled then
 
@@ -457,9 +477,15 @@ function library:CreateWindow(text)
                 end
                 
                 pcall(callback, toggled)
-                
+            end
+
+            TextButton.MouseButton1Click:Connect(function()
+
+                fire()
                 
             end)
+
+            toggles[#toggles + 1] = {text, fire}
 
             UICorner.Parent = TextButton
 
@@ -560,18 +586,43 @@ function library:CreateWindow(text)
 	return EpicLibrary
 end
 
+
+
 menu = library
 local speaker = game.Players.LocalPlayer
-menu = menu:CreateWindow("Super power traning simulator")
+menu = menu:CreateWindow("SPTS hub")
+
+game:GetService("ReplicatedStorage").RemoteEvent:FireServer({[1] = "Respawn"})
+
+
+delay(4, function()
+    local AnyFarm = false
+    if isfile("Farm First.txt") then
+        AnyFarm = true
+        fire_toggle("Farm First")
+    elseif isfile("Farm Body.txt") then
+        AnyFarm = true
+        fire_toggle("Farm Body")
+    elseif isfile("Farm Psy.txt") then
+        AnyFarm = true
+        fire_toggle("Farm Psy")
+    end
+
+    if AnyFarm then
+        fire_toggle("auto respawn")
+    end
+end)
 spawn(function()
     local speaker = game.Players.LocalPlayer
 
-while true and task.wait() do
-        if game.Players.LocalPlayer.PlayerGui.ScreenGui.Enabled==false and game.Lighting.Blur.Enabled == true and (speaker.Character and speaker.Character:FindFirstChild("Humanoid")).Health > 0 then
-            game.Lighting.Blur.Enabled = false
-            game.Players.LocalPlayer.PlayerGui.IntroGui.Enabled = false
-            game.Players.LocalPlayer.PlayerGui.ScreenGui.Enabled = true
-        end
+    while true and task.wait() do
+        pcall(function()
+            if game.Players.LocalPlayer.PlayerGui.ScreenGui.Enabled==false and game.Lighting.Blur.Enabled == true and (speaker.Character and speaker.Character:FindFirstChild("Humanoid")).Health > 0 then
+                game.Lighting.Blur.Enabled = false
+                game.Players.LocalPlayer.PlayerGui.IntroGui.Enabled = false
+                game.Players.LocalPlayer.PlayerGui.ScreenGui.Enabled = true
+            end
+        end)
     end
 end)
 local farms = menu:CreateTab("Farms")
@@ -679,6 +730,13 @@ function NewFarm(farm_name, toolname, cframes)
     local oldpos
     local myfarm
     farms:CreateToggle(farm_name, function(bool)
+        pcall(function()
+            if isfile(farm_name..'.txt') and not bool then
+                delfile(farm_name..'.txt')
+            elseif bool then
+                writefile(farm_name..'.txt', "")
+            end
+        end)
         AutoClick(bool)
         if bool then
             oldpos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
@@ -716,6 +774,8 @@ function NewFarm(farm_name, toolname, cframes)
         end
     end)
 end
+
+
 local autorespawn = false
 function Refresh()
     local speaker = game.Players.LocalPlayer
@@ -1670,13 +1730,18 @@ webhook:CreateToggle("Psychic Stats", function(bool)
     input_psychic = bool
 end)
 
+local isKick = false 
 
+game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(function()
+    isKick = true
+end)
 
 webhook:CreateToggle("Start send webhooks", function(bool)
     webhook_spam = bool
 
     spawn(function()
         while webhook_spam do
+            if isKick == true then return end
             local data = os.date("!*t", tick())
 
             local final = string.format("**Dia: %s, Horario: %s:%s:%s**", data.day, data.hour, data.min, data.sec)
