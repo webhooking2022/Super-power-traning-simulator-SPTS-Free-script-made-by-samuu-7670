@@ -62,15 +62,23 @@ game.Players.LocalPlayer.OnTeleport:Connect(function(State)
 end)
 
 getgenv().toggles = {}
-local buttons = {}
+getgenv().buttons = {}
 
 function fire_toggle(togglename, spec)
+    for i,v in pairs(toggles) do
+        if string.find(v[1]:lower(), togglename) then
+            v[2](spec)
+        end
+    end
+end
+function fire_button(togglename)
     for i,v in pairs(toggles) do
         if string.find(v[1]:lower(), togglename) then
             v[2]()
         end
     end
 end
+
 
 function library:CreateWindow(text)
 	local ScreenGui = Instance.new("ScreenGui")
@@ -377,6 +385,8 @@ function library:CreateWindow(text)
             TextButton.MouseButton1Click:Connect(function()
                 pcall(callback)
             end)
+
+            buttons[#buttons + 1] = {text, callback}
             UICorner.Parent = TextButton
 
             DropShadow.Name = "DropShadow"
@@ -599,13 +609,13 @@ delay(4, function()
     local AnyFarm = false
     if isfile("Farm First.txt") then
         AnyFarm = true
-        fire_toggle("Farm First")
+        pcall(function() fire_toggle("Farm First", true) end)
     elseif isfile("Farm Body.txt") then
         AnyFarm = true
-        fire_toggle("Farm Body")
+        pcall(function() fire_toggle("Farm Body", true) end)
     elseif isfile("Farm Psy.txt") then
         AnyFarm = true
-        fire_toggle("Farm Psy")
+        pcall(function() fire_toggle("Farm Psy", true) end)
     end
 
     if AnyFarm then
