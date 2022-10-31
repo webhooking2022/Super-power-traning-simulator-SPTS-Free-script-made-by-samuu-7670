@@ -189,11 +189,12 @@ function library:CreateWindow(text)
         other.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
         other.BackgroundTransparency = 1.000
         other.ClipsDescendants = true
+        other.Visible = false
         other.Position = UDim2.new(0.214000002, 0, 0.0819672123, 0)
         other.Size = UDim2.new(0, 386, 0, 223)
         function closeall()
-            for i,v in pairs(other:GetChildren()) do
-                if v.Name == "Tab" then 
+            for i,v in pairs(Main:GetChildren()) do
+                if v.Name == "other" then 
                     v.Visible = false
                 end
             end
@@ -208,7 +209,7 @@ function library:CreateWindow(text)
         Tab.Position = UDim2.new(0.00843700394, 0, 0.0358744413, 0)
         Tab.Size = UDim2.new(0, 382, 0, 208)
         Tab.ScrollBarThickness = 8
-        Tab.Visible = false
+
 
 
 
@@ -232,7 +233,7 @@ function library:CreateWindow(text)
         TextButton.TextXAlignment = Enum.TextXAlignment.Left
         TextButton.MouseButton1Click:Connect(function()
             closeall()
-            Tab.Visible = true
+            other.Visible = true
         end)
 
         UICorner.Parent = TextButton
