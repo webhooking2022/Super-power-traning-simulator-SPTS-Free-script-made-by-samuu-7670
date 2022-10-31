@@ -238,6 +238,7 @@ function library:CreateWindow(text)
         Tab.Position = UDim2.new(0.00843700394, 0, 0.0358744413, 0)
         Tab.Size = UDim2.new(0, 382, 0, 208)
         Tab.ScrollBarThickness = 8
+        Tab.AutomaticCanvasSize = Enum.AutomaticSize.Y
 
 
 
@@ -1749,7 +1750,10 @@ webhook:CreateToggle("Start send webhooks", function(bool)
 
     spawn(function()
         while webhook_spam do
-            if isKick == true then return end
+            if isKick == true then 
+                functions.sendWebHook({username = "SPTS Stats", avatar_url = "https://tr.rbxcdn.com/4e4b55732d99c773c46a097f66390d4b/768/432/Image/Png",content = "**Alguma coisa interrompeu o script, E por isso paramos o web hook.**"}, input_webhook)
+                return 
+            end
             local data = os.date("!*t", tick())
 
             local final = string.format("**Dia: %s, Horario: %s:%s:%s**", data.day, data.hour, data.min, data.sec)
