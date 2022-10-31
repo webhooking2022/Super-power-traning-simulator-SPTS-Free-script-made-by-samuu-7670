@@ -589,6 +589,8 @@ function library:CreateWindow(text)
 
             UICorner_10.CornerRadius = UDim.new(0, 4)
             UICorner_10.Parent = DropShadow_8
+
+            return fire
 		end
 		return ButtonsONTab
 	end
@@ -723,7 +725,7 @@ function NewFarm(farm_name, toolname, cframes)
     
     local oldpos
     local myfarm
-    farms:CreateToggle(farm_name, function(bool)
+    local fire = farms:CreateToggle(farm_name, function(bool)
         pcall(function()
             if isfile(farm_name..'.txt') and not bool then
                 delfile(farm_name..'.txt')
@@ -772,7 +774,7 @@ function NewFarm(farm_name, toolname, cframes)
         local AnyFarm = false
         if isfile(farm_name..".txt") then
             AnyFarm= true 
-            fire_toggle(farm_name)
+            pcall(fire)
         end
     
         if AnyFarm then
