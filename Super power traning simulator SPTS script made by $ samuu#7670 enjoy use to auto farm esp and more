@@ -605,23 +605,7 @@ menu = menu:CreateWindow("SPTS hub")
 game:GetService("ReplicatedStorage").RemoteEvent:FireServer({[1] = "Respawn"})
 
 
-delay(4, function()
-    local AnyFarm = false
-    if isfile("Farm First.txt") then
-        AnyFarm = true
-        pcall(function() fire_toggle("farm first", true) end)
-    elseif isfile("Farm Body.txt") then
-        AnyFarm = true
-        pcall(function() fire_toggle("farm body", true) end)
-    elseif isfile("Farm Psy.txt") then
-        AnyFarm = true
-        pcall(function() fire_toggle("farm psy", true) end)
-    end
 
-    if AnyFarm then
-        fire_toggle("auto respawn")
-    end
-end)
 spawn(function()
     local speaker = game.Players.LocalPlayer
 
@@ -781,6 +765,18 @@ function NewFarm(farm_name, toolname, cframes)
                 wait()
                 game.Players.LocalPlayer.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
             end
+        end
+    end)
+
+    delay(4, function()
+        local AnyFarm = false
+        if isfile(farm_name..".txt") then
+            AnyFarm= true 
+            fire_toggle(farm_name)
+        end
+    
+        if AnyFarm then
+            fire_toggle("auto respawn")
         end
     end)
 end
