@@ -1,48 +1,42 @@
-local function prt(info, text2, color)
-    rconsoleprint("[")
-    rconsoleprint(color)
-    for i,v in pairs(info:split("")) do 
-        rconsoleprint(v)
-        wait()
-    end 
-    rconsoleprint("@@WHITE@@")
-    rconsoleprint("] ")
-    
-    rconsoleprint("@@WHITE@@")
-    text2 = text2 .. "\n"
-    for i,v in pairs(text2:split("")) do 
-        rconsoleprint(v)
-        wait()
-    end 
-end
-
-rconsoleclear()
-rconsolename("SPTS Hub")
-
-
-prt("WELCOME", "Bem-vindo(a) ao SPTS Hub!", "@@LIGHT_CYAN@@")
-prt("KEY SYSTEM", "Por favor coloque sua KEY abaixo. [Como o menu ainda e free, a key e: Free menu]", "@@LIGHT_CYAN@@")
-wait(0.1)
-local key = rconsoleinput()
-
-if key == "Free menu" then
-    prt("SUCESS", "Ok!, Aguarde pois iremos injetar alguns scripts.", "@@LIGHT_GREEN@@")
-    prt("Anti afk", "Sucesso", "@@LIGHT_GREEN@@")
-    game.Players.LocalPlayer.Idled:Connect(function()
-        local VirtualUser = game:GetService("VirtualUser")
-        VirtualUser:CaptureController()
-        VirtualUser:ClickButton2(Vector2.new())
-    end)
-    Continue = true
-else
-    prt("ERROR", "Sua chave esta incorreta. Por favor re-injete o menu e tente novamente.", "@@LIGHT_RED@@")
-    
-end
-
-if Continue == true then else return end 
 loadstring(game:HttpGet("https://raw.githubusercontent.com/webhooking2022/functions-library/main/.functions"))()
 repeat wait() until functions
 
+
+local keys = {
+	"vtin",
+	"samu",
+	"madruga"
+}
+ 
+ 
+
+function check(key)
+    if table.find(keys, key) then
+        return true 
+    else
+        return false
+    end
+end
+
+local sucessfully = false
+
+if isfile("key.txt") then
+    sucessfully = check(readfile("key.txt"))
+else
+    sucessfully = check(Key)
+    if sucessfully then
+        writefile("key.txt", Key)
+    end
+end
+
+repeat wait() until sucessfully
+functions.sendNotification("Sucesso", "Sucesso", 1)
+-- Anti idle
+game.Players.LocalPlayer.Idled:Connect(function()
+    local VirtualUser = game:GetService("VirtualUser")
+    VirtualUser:CaptureController()
+    VirtualUser:ClickButton2(Vector2.new())
+end)
 
 local library = {}
 
@@ -122,9 +116,15 @@ function library:CreateWindow(text)
             Opened = not Opened
 
             if Opened then
-                Menu:TweenSize(UDim2.new(0,0,0,0), "InOut", "Quart", 0.25, true)
+                Main:TweenSize(UDim2.new(0,0,0,0), "In", "Quart", 0.25, true)
+                Main.ClipsDescendants = true
+                wait(0.25)
+                Main.Visible = false
             else
-                Menu:TweenSize(UDim2.new(0, 500, 0, 244), "InOut", "Quart", 0.25, true)
+                Main.Visible = true
+                Main:TweenSize(UDim2.new(0, 500, 0, 244), "Out", "Quart", 0.25, true)
+                wait(0.25)
+                Main.ClipsDescendants = false
             end
         end
     end)
@@ -227,7 +227,7 @@ function library:CreateWindow(text)
         
 	
 	local EpicLibrary = {}
-	
+
 	function EpicLibrary:CreateTab(text)
         
         local UIListLayout_2 = Instance.new("UIListLayout")
@@ -283,10 +283,14 @@ function library:CreateWindow(text)
         TextButton.TextSize = 14.000
         TextButton.Text = text
         TextButton.TextXAlignment = Enum.TextXAlignment.Left
+        local your = pos 
         TextButton.MouseButton1Click:Connect(function()
             closeall()
             other.Visible = true
         end)
+
+
+
 
         UICorner.Parent = TextButton
 		local ButtonsONTab = {}
